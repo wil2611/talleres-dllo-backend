@@ -20,7 +20,8 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   const usuario = await findUsuarioByCorreo(correo);
 
   if (!usuario || !(await bcrypt.compare(contraseña, usuario.contraseña))) {
-    return res.status(400).send({ error: 'Credenciales inválidas' });
+    res.status(400).send({ error: 'Credenciales inválidas' });
+    return;
   }
 
   const token = jwt.sign({ id: usuario._id }, JWT_SECRET);
