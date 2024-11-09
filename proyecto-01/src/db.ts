@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
-import { env } from "process";
+import dotenv from "dotenv";
+
+dotenv.config(); // Cargar las variables de entorno desde .env
 
 export default function handleMongoConnection() {
-    mongoose.connect((env as { MONGO_CONN_STRING: string }).MONGO_CONN_STRING)
+    const mongoURI = process.env.MONGO_CONN_STRING;
+    if (!mongoURI) {
+        throw new Error("MongoDB connection string is missing.");
+    }
+
+    mongoose.connect(mongoURI)
         .then(() => {
             console.log("Connected to MongoDB server.");
         })
