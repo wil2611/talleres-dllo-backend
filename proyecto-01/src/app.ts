@@ -1,23 +1,27 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import { connectDB } from './config/database';
-import usuariosRoutes from './routes/usuarios';
-import librosRoutes from './routes/libros';
+import userRoutes from "./user/v1/user.routes";
+import express from "express";
+import { Request, Response } from "express";
+import cors from "cors";
 
-dotenv.config();
-const app = express();
-app.use(express.json());
+// ROUTES
+const SERVER_VERSION = "/api/v1/";
 
-connectDB().then(() => {
-  console.log('Base de datos conectada');
-});
+// FALLBACKS
+function routeNotFound(request: Request, response: Response) {
+  response.status(404).json({
+    message: "Route not found.",
+  });
+}
 
-app.use('/usuarios', usuariosRoutes);
-app.use('/libros', librosRoutes);
+export default function createApp() {
+  // MIDDLEWARES
+  const app = express();
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
-});
-
-export default app;
+  app.use(cors());
+  app.use(express.json());
+  
+  app.use(SERVER_VERSION + "users", userRoutes);
+  
+  app.use(routeNotFound);
+  return app;
+}
